@@ -182,15 +182,41 @@ echo
 echo "Iniciando servidor..."
 echo
 
-# Detectar IP do celular
-IP=$(ip -4 addr show wlan0 2>/dev/null | \
-    grep -oP '(?<=inet\s)\d+(\.\d+){3}' | \
-    head -n 1)
+# Detectar IP local do celular
+IP=""
 
-# Caso não encontre pela wlan0
-if [ -z "$IP" ]; then
-    IP=$(hostname -I 2>/dev/null | awk '{print $1}')
-fi
+for interface in $(ip -o link show | awk -F': ' '{print $2}' | cut -d'@' -f1); do
+
+    ADDRESSES=$(ip -4 addr show "$interface" 2>/dev/null | \
+        awk '/inet / {print $2}' | cut -d/ -f1)
+
+    for addr in $ADDRESSES; do
+
+        # Ignorar localhost
+        if [[ "$addr" == "127."* ]]; then
+            continue
+        fi
+
+        # Rede 10.x.x.x
+        if [[ "$addr" =~ ^10\. ]]; then
+            IP="$addr"
+            break 2
+        fi
+
+        # Rede 192.168.x.x
+        if [[ "$addr" =~ ^192\.168\. ]]; then
+            IP="$addr"
+            break 2
+        fi
+
+        # Rede 172.16.x.x até 172.31.x.x
+        if [[ "$addr" =~ ^172\.(1[6-9]|2[0-9]|3[0-1])\. ]]; then
+            IP="$addr"
+            break 2
+        fi
+
+    done
+done
 
 # Iniciar File Browser
 filebrowser \
