@@ -72,7 +72,7 @@ E pronto. O script vai guiando você durante a instalação.
 
 ---
 
-## 🔑 Login
+## Login
 
 Durante a instalação, você escolhe:
 
@@ -87,7 +87,7 @@ Depois o File Browser fica protegido pelo login que você criou.
 
 ---
 
-## 🌐 Escolhendo a porta
+## Escolhendo a porta
 
 O instalador pergunta:
 
@@ -115,7 +115,7 @@ http://IP-DO-CELULAR:8085
 
 ---
 
-## 📂 Acessando os arquivos
+## Acessando os arquivos
 
 Depois que o servidor iniciar, você verá algo parecido com:
 
@@ -151,7 +151,7 @@ Agora você consegue acessar os arquivos do celular pelo navegador. 👀
 
 ---
 
-## 🧠 Arquiteturas
+## Arquiteturas
 
 O script tenta detectar automaticamente a arquitetura do aparelho.
 
@@ -170,7 +170,7 @@ aarch64
 
 ---
 
-## 🛠️ Rodando manualmente
+## Rodando manualmente
 
 Se você precisar iniciar o servidor novamente depois:
 
@@ -186,46 +186,14 @@ filebrowser -a 0.0.0.0 -p 8085 -r /storage/emulated/0
 
 ---
 
-## 💡 O que dá para fazer com isso?
-
-Além de simplesmente guardar arquivos, esse projeto pode virar várias coisas:
-
-* 📸 backup de fotos
-* 🎬 servidor para vídeos
-* 📁 armazenamento pessoal
-* 💻 compartilhar arquivos entre PC e celular
-* 🗄️ mini NAS
-* 🏠 servidor dentro da sua rede
-* ♻️ dar uma segunda vida para um celular antigo
-
-E sim, dá para deixar o celular ligado e funcionando como um servidor.
+Agora é só deixar o celular sempre ligado e funcionando como um servidor!
 
 ---
 
-## ⚠️ Importante
-
-Esse projeto foi pensado principalmente para uso **dentro da sua rede local**.
-
-Não abra a porta do servidor diretamente para a internet sem entender as implicações de segurança.
-
-E use uma senha forte.
-
----
-
-## 📦 Sobre o File Browser
+## Sobre o File Browser
 
 Este projeto utiliza o [File Browser](https://github.com/filebrowser/filebrowser) para fornecer a interface de gerenciamento dos arquivos.
 
-Consulte os releases oficiais caso precise verificar as versões disponíveis para outras arquiteturas.
-
 ---
 
-## 🖤 feito por
-
-**gio.yaml**
-
-Tech, programação, eletrônica e umas ideias que provavelmente começaram com:
-
-> "e se eu tentasse fazer isso?"
-
-Se esse projeto te ajudou, ⭐ no repositório é sempre bem-vindo.
+Se esse projeto te ajudou, ⭐ no repositório :) 
