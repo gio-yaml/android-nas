@@ -43,7 +43,7 @@ case "$ARCH" in
         ;;
     *)
         echo
-        echo "❌ Arquitetura não suportada: $ARCH"
+        echo "Arquitetura não suportada: $ARCH"
         exit 1
         ;;
 esac
@@ -73,7 +73,6 @@ rm -f "$FILE"
 
 echo
 echo "✓ File Browser instalado!"
-
 
 if ! command -v filebrowser >/dev/null 2>&1; then
     echo "Não foi possível encontrar o File Browser :("
@@ -107,7 +106,7 @@ while true; do
         break
     fi
 
-    echo " O usuário não pode ficar vazio."
+    echo "O usuário não pode ficar vazio."
 done
 
 while true; do
@@ -139,12 +138,12 @@ done
 
 filebrowser -d "$DB" users add "$USERNAME" "$PASSWORD" --perm.admin
 
-# Escolher porta
 echo
 echo "======================================"
 echo "       CONFIGURAÇÃO DA PORTA"
 echo "======================================"
 echo
+
 echo "A porta padrão é 8080."
 echo "Pressione ENTER para usar 8080."
 echo
@@ -175,14 +174,56 @@ echo "======================================"
 echo "       INSTALAÇÃO CONCLUÍDA!"
 echo "======================================"
 echo
+
 echo "Usuário: $USERNAME"
 echo "Porta: $PORT"
+
 echo
 echo "Iniciando servidor..."
 echo
 
+# Detectar IP do celular
+IP=$(ip -4 addr show wlan0 2>/dev/null | \
+    grep -oP '(?<=inet\s)\d+(\.\d+){3}' | \
+    head -n 1)
+
+# Caso não encontre pela wlan0
+if [ -z "$IP" ]; then
+    IP=$(hostname -I 2>/dev/null | awk '{print $1}')
+fi
+
+# Iniciar File Browser
 filebrowser \
     -a 0.0.0.0 \
     -p "$PORT" \
     -r /storage/emulated/0 \
-    -d "$DB"
+    -d "$DB" &
+
+SERVER_PID=$!
+
+# Aguardar o servidor iniciar
+sleep 2
+
+echo
+echo "======================================"
+echo "       SERVIDOR INICIADO!"
+echo "======================================"
+echo
+
+if [ -n "$IP" ]; then
+    echo "Acesse:"
+    echo
+    echo "   http://$IP:$PORT"
+    echo
+else
+    echo "Não foi possível detectar o IP do celular."
+    echo "Use o IP do celular com a porta $PORT."
+    echo
+fi
+
+echo "Servidor rodando."
+echo "Pressione CTRL+C para encerrar."
+echo
+
+# Manter o processo ativo
+wait "$SERVER_PID"
