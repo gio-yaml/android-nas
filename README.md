@@ -1,28 +1,32 @@
 # 📱 Servidor de arquivos usando um celular velho
 
-Transformando um celular android em um **servidor de arquivos acessível pelo Wi-Fi**.
-
+Transformando um celular Android em um **servidor de arquivos acessível pelo Wi-Fi**.
 
 **celular velho → Termux → File Browser → seus arquivos pela rede**
 
-(Depois de criar ele acessível pela rede, também é possível fazer ele ficar acessível pela internet)
+A ideia é reaproveitar um celular que está parado e transformar ele em uma espécie de mini drive, sem precisar de computador ou hardware dedicado.
+
+Depois de criar o servidor na rede local, também é possível configurar um acesso pela internet.
 
 ---
 
-## ✨ O que esse script faz?
+## O que esse script faz?
 
-Você roda **um comando** no Termux e ele:
+Você baixa o projeto, roda o instalador e ele cuida do resto:
 
 * libera o acesso aos arquivos do Android
-* atualiza o Termux
+* instala as dependências necessárias
 * detecta a arquitetura do celular
 * baixa a versão correspondente do File Browser
 * instala o File Browser
-* deixa você escolher usuário e senha
-* deixa você escolher a porta
+* permite criar seu próprio usuário
+* permite criar sua própria senha
+* exige uma senha com no mínimo 12 caracteres
+* permite escolher a porta do servidor
+* detecta automaticamente o IP do celular
 * inicia o servidor
 
-A porta padrão é **8080**, mas você pode escolher outra.
+A porta padrão é **8080**, mas você pode escolher outra durante a instalação.
 
 ---
 
@@ -33,6 +37,13 @@ A porta padrão é **8080**, mas você pode escolher outra.
 * Termux
 
 > O celular e o dispositivo que vai acessar os arquivos precisam estar na mesma rede Wi-Fi.
+
+Não é necessário:
+
+* root
+* modo desenvolvedor
+* depuração USB
+* conectar o celular ao computador
 
 ---
 
@@ -46,7 +57,9 @@ https://f-droid.org/packages/com.termux/
 
 Depois abra o Termux.
 
-### 2. Rode o instalador
+### 2. Baixe o projeto
+
+Primeiro instale o Git:
 
 ```bash
 pkg update
@@ -56,46 +69,57 @@ pkg update
 pkg install git -y
 ```
 
+Agora baixe este repositório:
+
 ```bash
 git clone https://github.com/gio-yaml/android-nas
 ```
+
+Entre na pasta:
 
 ```bash
 cd android-nas
 ```
 
+E rode o instalador:
+
 ```bash
 bash install.sh
 ```
 
-E pronto. O script vai guiando você durante a instalação.
+A partir daqui, o script vai guiando você.
 
 ---
 
 ## Login
 
-Durante a instalação, você escolhe:
+Durante a instalação, você poderá criar seu próprio usuário e senha.
 
 ```text
-Usuário:
-Senha:
+Digite o nome de usuário:
+Digite sua senha:
+Digite a senha novamente:
 ```
 
-A senha não aparece na tela enquanto você digita. É normal.
+A senha não aparece enquanto você digita. Isso é normal.
 
-Depois o File Browser fica protegido pelo login que você criou.
+A senha precisa ter **no mínimo 12 caracteres**.
+
+Se as senhas não forem iguais, o instalador pede para tentar novamente.
 
 ---
 
 ## Escolhendo a porta
 
-O instalador pergunta:
+O instalador também permite escolher a porta que será usada pelo servidor.
+
+Por padrão:
 
 ```text
 Digite a porta [8080]:
 ```
 
-Se você simplesmente apertar **ENTER**, ele usa:
+Se você apertar `ENTER`, será utilizada a porta:
 
 ```text
 8080
@@ -107,7 +131,7 @@ Mas você pode escolher outra:
 Digite a porta [8080]: 8085
 ```
 
-Nesse caso, o servidor ficará em:
+Nesse caso, o endereço será:
 
 ```text
 http://IP-DO-CELULAR:8085
@@ -117,43 +141,36 @@ http://IP-DO-CELULAR:8085
 
 ## Acessando os arquivos
 
-Depois que o servidor iniciar, você verá algo parecido com:
+Depois da configuração, o script detecta automaticamente o IP do celular e mostra o endereço para acessar o servidor.
+
+Algo como:
 
 ```text
-Server started
+======================================
+       SERVIDOR INICIADO!
+======================================
+
+Acesse pelo navegador:
+
+   http://192.168.15.31:8080
+
+Usuário: seu_usuario
+
+Certifique-se de que o outro dispositivo
+está conectado à mesma rede Wi-Fi.
 ```
 
-Descubra o IP do celular nas configurações do Wi-Fi.
+É só copiar o endereço mostrado no Termux e abrir no navegador do computador ou de outro celular conectado à mesma rede.
 
-Por exemplo:
-
-```text
-192.168.15.31
-```
-
-No computador, abra:
-
-```text
-http://192.168.15.31:8080
-```
-
-Se você escolheu outra porta, use ela no final.
-
-Exemplo:
-
-```text
-http://192.168.15.31:8085
-```
-
-Faça login com o usuário e a senha que você criou.
-
-Agora você consegue acessar os arquivos do celular pelo navegador. 👀
+Depois, faça login usando o usuário e a senha que você criou.
 
 ---
 
 ## Arquiteturas
 
-O script tenta detectar automaticamente a arquitetura do aparelho.
+O instalador verifica automaticamente a arquitetura do celular usando `uname -m`.
+
+Atualmente são consideradas:
 
 ```text
 aarch64  → ARM64
@@ -162,38 +179,40 @@ i686     → x86 32-bit
 armv7l   → ARM 32-bit
 ```
 
-A maioria dos celulares Android atuais deve retornar:
+A maioria dos celulares Android atuais usa ARM64 e deve retornar:
 
 ```text
 aarch64
 ```
 
----
+Se a arquitetura não for reconhecida pelo script, a instalação é interrompida
 
-## Rodando manualmente
 
-Se você precisar iniciar o servidor novamente depois:
+## Usando como um mini NAS
 
-```bash
-filebrowser -a 0.0.0.0 -p 8080 -r /storage/emulated/0
-```
+Depois de instalado, você pode deixar o celular conectado ao Wi-Fi e usar o servidor para:
 
-Se estiver usando outra porta:
+* armazenar arquivos
+* transferir arquivos entre dispositivos
+* guardar fotos e vídeos
+* fazer backups
+* acessar documentos
+* reaproveitar um celular antigo
 
-```bash
-filebrowser -a 0.0.0.0 -p 8085 -r /storage/emulated/0
-```
-
----
-
-Agora é só deixar o celular sempre ligado e funcionando como um servidor!
+Basicamente, aquele celular parado na gaveta ganha uma segunda vida!
 
 ---
 
-## Sobre o File Browser
+## Acesso pela internet
 
-Este projeto utiliza o [File Browser](https://github.com/filebrowser/filebrowser) para fornecer a interface de gerenciamento dos arquivos.
+Por padrão, o servidor foi pensado para funcionar dentro da sua **rede local**.
+
+É possível fazer o acesso pela internet, mas com uma configuração adicional de rede e segurança.
+
+**Não abra simplesmente a porta do File Browser no roteador sem entender o que está fazendo.**
 
 ---
 
-Se esse projeto te ajudou, ⭐ no repositório :) 
+Se esse projeto te ajudou, uma estrela no repositório já ajuda bastante. ⭐
+
+**gio.yaml**
