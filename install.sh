@@ -7,7 +7,6 @@ echo "   SERVIDOR DE ARQUIVOS - TERMUX"
 echo "======================================"
 echo
 
-# 1. Permissão para acessar os arquivos
 echo "[1/7] Solicitando acesso aos arquivos..."
 termux-setup-storage
 
@@ -15,17 +14,10 @@ echo
 echo "Depois de permitir o acesso, pressione ENTER."
 read -r
 
-# 2. Atualizar o Termux
-echo
-echo "[2/7] Atualizando o Termux..."
-pkg update -y
-
-# 3. Instalar dependências
 echo
 echo "[3/7] Instalando dependências..."
 pkg install wget tar -y
 
-# 4. Detectar arquitetura
 echo
 echo "[4/7] Detectando arquitetura..."
 
@@ -56,7 +48,6 @@ case "$ARCH" in
         ;;
 esac
 
-# 5. Baixar e instalar File Browser
 echo
 echo "[5/7] Baixando File Browser..."
 
@@ -83,16 +74,15 @@ rm -f "$FILE"
 echo
 echo "✓ File Browser instalado!"
 
-# Verificar instalação
+
 if ! command -v filebrowser >/dev/null 2>&1; then
-    echo "❌ Não foi possível encontrar o File Browser."
+    echo "Não foi possível encontrar o File Browser :("
     exit 1
 fi
 
 echo
 filebrowser version
 
-# 6. Criar banco de dados
 echo
 echo "[6/7] Configurando o servidor..."
 
@@ -104,7 +94,6 @@ if [ ! -f "$DB" ]; then
     filebrowser -d "$DB" config init
 fi
 
-# 7. Criar usuário
 echo
 echo "======================================"
 echo "       CRIAR LOGIN DO SERVIDOR"
@@ -118,27 +107,33 @@ while true; do
         break
     fi
 
-    echo "❌ O usuário não pode ficar vazio."
+    echo " O usuário não pode ficar vazio."
 done
 
 while true; do
     read -rsp "Digite sua senha: " PASSWORD
     echo
 
-    read -rsp "Digite a senha novamente: " PASSWORD2
-    echo
-
     if [ -z "$PASSWORD" ]; then
-        echo "❌ A senha não pode ficar vazia."
+        echo "A senha não pode ficar vazia."
         echo
         continue
     fi
+
+    if [[ ${#PASSWORD} -lt 12 ]]; then
+        echo "A senha precisa ter no mínimo 12 caracteres."
+        echo
+        continue
+    fi
+
+    read -rsp "Digite a senha novamente: " PASSWORD2
+    echo
 
     if [ "$PASSWORD" = "$PASSWORD2" ]; then
         break
     fi
 
-    echo "❌ As senhas não coincidem."
+    echo "As senhas não coincidem."
     echo
 done
 
@@ -160,12 +155,12 @@ while true; do
     PORT=${PORT:-8080}
 
     if ! [[ "$PORT" =~ ^[0-9]+$ ]]; then
-        echo "❌ Digite apenas números."
+        echo "Digite apenas números."
         continue
     fi
 
     if [ "$PORT" -lt 1024 ] || [ "$PORT" -gt 65535 ]; then
-        echo "❌ Escolha uma porta entre 1024 e 65535."
+        echo "Escolha uma porta entre 1024 e 65535."
         continue
     fi
 
