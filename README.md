@@ -16,9 +16,8 @@ Você baixa o projeto, roda o instalador e ele cuida do resto:
 
 * libera o acesso aos arquivos do Android
 * instala as dependências necessárias
-* detecta a arquitetura do celular
-* baixa a versão correspondente do File Browser
-* instala o File Browser
+* adiciona o repositório TUR do Termux
+* instala o File Browser pelo pacote nativo do Android
 * permite criar seu próprio usuário
 * permite criar sua própria senha
 * exige uma senha com no mínimo 12 caracteres
@@ -35,6 +34,7 @@ A porta padrão é **8080**, mas você pode escolher outra durante a instalaçã
 * um celular Android
 * Wi-Fi
 * Termux
+* conexão com a internet (para baixar os pacotes)
 
 > O celular e o dispositivo que vai acessar os arquivos precisam estar na mesma rede Wi-Fi.
 
@@ -164,28 +164,51 @@ está conectado à mesma rede Wi-Fi.
 
 Depois, faça login usando o usuário e a senha que você criou.
 
+O servidor é iniciado em segundo plano, então você pode fechar o Termux ou
+sair da conexão SSH sem que ele pare.
+
 ---
 
-## Arquiteturas
+## Parando o servidor
 
-O instalador verifica automaticamente a arquitetura do celular usando `uname -m`.
+Como o servidor roda em segundo plano, ele continua ativo até ser encerrado
+manualmente.
 
-Atualmente são consideradas:
+Para parar, rode no Termux:
 
-```text
-aarch64  → ARM64
-x86_64   → AMD64
-i686     → x86 32-bit
-armv7l   → ARM 32-bit
+```bash
+kill $(cat ~/.filebrowser/filebrowser.pid)
 ```
 
-A maioria dos celulares Android atuais usa ARM64 e deve retornar:
+Para acompanhar o que o servidor está registrando, veja o log:
 
-```text
-aarch64
+```bash
+cat ~/.filebrowser/filebrowser.log
 ```
 
-Se a arquitetura não for reconhecida pelo script, a instalação é interrompida
+---
+
+## Arquiteturas e compatibilidade com Android
+
+O instalador **não baixa** os binários do site oficial do File Browser.
+
+Esses binários são compilados para **Linux genérico** (glibc, `ET_EXEC` não-PIE)
+e, em muitos celulares com Android 10 ou superior, falham ao iniciar com:
+
+```text
+Segmentation fault
+```
+
+Isso acontece porque o Termux roda sobre a **bionic libc** do Android, que exige
+executáveis PIE e um alinhamento de TLS diferente do Linux tradicional
+(veja o issue [filebrowser#2536](https://github.com/filebrowser/filebrowser/issues/2536)).
+
+Por isso o instalador usa o pacote `filebrowser` do **TUR**
+(Termux User Repository), compilado nativamente para Android e instalado
+automaticamente junto com o `tur-repo`.
+
+Assim funciona em qualquer arquitetura suportada pelo Termux
+(`aarch64`, `arm`, `x86_64`, `i686`) sem precisar detectar nada manualmente.
 
 
 ## Usando como um mini NAS
