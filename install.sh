@@ -49,28 +49,29 @@ echo
 
 echo "[3/7] Detectando arquitetura..."
 
+
 ARCH=$(uname -m)
 
 case "$ARCH" in
     aarch64)
         FILE="linux-arm64-filebrowser.tar.gz"
-        echo "✓ ARM64 detectado (aarch64)"
+        echo "✓ ARM64 detectado"
+        ;;
+
+    armv5*|armv6*|armv7*|armv8l|arm) # verifica outras versoes da arquiteturas ARM
+        FILE="linux-armv5-filebrowser.tar.gz"
+        echo "✓ ARM 32-bit detectado ($ARCH)"
+        echo "Usando build ARMv5."
         ;;
     x86_64)
         FILE="linux-amd64-filebrowser.tar.gz"
-        echo "✓ AMD64 detectado (x86_64)"
+        echo "✓ AMD64 detectado"
         ;;
-    i686|x86)
+    i686|i386|i486|i586|x86) # verifica outras versoes da arquitetura x86
         FILE="linux-386-filebrowser.tar.gz"
         echo "✓ x86 32-bit detectado"
         ;;
-    armv7l|arm)
-        FILE="linux-armv5-filebrowser.tar.gz"
-        echo "✓ ARM 32-bit detectado"
-        echo "Usando a build ARMv5."
-        ;;
     *)
-        echo
         echo "Arquitetura não suportada: $ARCH"
         exit 1
         ;;
@@ -269,5 +270,5 @@ echo "Servidor rodando."
 echo "Pressione CTRL+C para encerrar."
 echo
 
-# Isso mantem o processo ativ o
+# Isso mantem o processo ativo
 wait "$SERVER_PID"
